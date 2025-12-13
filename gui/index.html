@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Paradigm IDE</title>
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-editor: #252526;
+            --bg-sidebar: #333333;
+            --accent: #007acc;
+            --text-main: #cccccc;
+            --text-bright: #ffffff;
+            --border: #3e3e42;
+            --success: #4ec9b0;
+            --keyword: #569cd6;
+        }
+
+        body {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        header {
+            background-color: #333333;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #111;
+            font-size: 0.9rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-bright);
+            font-weight: normal;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        select {
+            background-color: #3c3c3c;
+            color: var(--text-bright);
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 2px;
+            font-family: inherit;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #0098ff;
+        }
+
+        /* Main Workspace */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            border-right: 1px solid var(--bg-dark);
+        }
+
+        .panel:last-child {
+            border-right: none;
+        }
+
+        .panel-header {
+            background-color: #252526;
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #858585;
+            border-bottom: 1px solid var(--border);
+        }
+
+        textarea,
+        pre {
+            flex: 1;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: none;
+            margin: 0;
+            outline: none;
+        }
+
+        textarea {
+            border-right: 1px solid var(--border);
+        }
+
+        pre {
+            background-color: #1e1e1e;
+            /* Match editor */
+            color: #ce9178;
+            /* Output color */
+            overflow: auto;
+        }
+
+        /* Status Bar */
+        footer {
+            background-color: #007acc;
+            color: white;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 2rem;
+            backdrop-filter: blur(2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>CORE // Multi-Paradigm Interpreter</h1>
+        <div class="controls">
+            <select id="language" onchange="updateStatus()">
+                <option value="c">C (Imperative)</option>
+                <option value="python">Python (OOP)</option>
+                <option value="prolog">Prolog (Logic)</option>
+                <option value="haskell">Haskell (Functional)</option>
+            </select>
+            <select id="examples" onchange="loadExample()">
+                <option value="">-- Load Example --</option>
+                <option value="10 + 20 * 3">Arithmetic (Precedence)</option>
+                <option value="(10 + 20) * 3">Arithmetic (Grouping)</option>
+                <option value="true and (false or true)">Boolean Logic</option>
+                <option value="100 > 50 and 50 < 200">Relational Check</option>
+                <option value="debug">Debug Mode Toggle</option>
+            </select>
+            <button onclick="runCode()">
+                <span>RUN</span> ▶
+            </button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <!-- Editor -->
+        <div class="panel">
+            <div class="panel-header">main.code</div>
+            <textarea id="code" spellcheck="false" placeholder="// Type your expression here...
+// Example: 10 + 20 * 3
+">10 + 20 * 3</textarea>
+        </div>
+
+        <!-- Output -->
+        <div class="panel">
+            <div class="panel-header">Console Output</div>
+            <pre id="output">System Ready.
+Waiting for input...</pre>
+        </div>
+    </div>
+
+    <footer>
+        <div id="status-left">Ready</div>
+        <div id="status-right">Ln 1, Col 1</div>
+    </footer>
+
+    <div class="loading-overlay" id="loader">
+        COMPILING...
+    </div>
+
+    <script>
+        function loadExample() {
+            const example = document.getElementById('examples').value;
+            if (example) {
+                document.getElementById('code').value = example;
+            }
+        }
+
+        function updateStatus() {
+            const lang = document.getElementById('language').value;
+            document.getElementById('status-left').innerText = "Mode: " + lang.toUpperCase();
+        }
+
+        async function runCode() {
+            const loader = document.getElementById('loader');
+            const output = document.getElementById('output');
+            const code = document.getElementById('code').value;
+            const language = document.getElementById('language').value;
+
+            loader.style.display = 'flex';
+            output.innerText = ''; // Clear output
+
+            try {
+                const response = await fetch('/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ language, code })
+                });
+
+                const data = await response.json();
+                let result = data.output || "No output.";
+
+                // Hacky formatting to make it look more 'terminal'
+                output.innerText = `> Executing ${language}...\n\n${result}`;
+            } catch (error) {
+                output.innerText = `[SYSTEM ERROR]: ${error.message}`;
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        // Init
+        updateStatus();
+    </script>
+</body>
+
+</html>
