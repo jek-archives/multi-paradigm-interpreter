@@ -40,6 +40,12 @@ evaluate(binOp(or, L, R), Val) :-
 % Dynamic flag for debug mode
 :- dynamic debug_mode/0.
 
+% Entry Point
+start :-
+    writeln('Prolog Interpreter REPL.'),
+    writeln('Commands: ''debug'' to toggle AST view, ''exit'' to quit.'),
+    repl.
+
 % REPL Loop
 repl :-
     write('>>> '),

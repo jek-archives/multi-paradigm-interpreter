@@ -95,8 +95,11 @@
             border-right: 1px solid var(--bg-dark);
         }
 
-        .panel:last-child {
-            border-right: none;
+        /* New Variable Watcher Panel */
+        .panel-sidebar {
+            width: 200px;
+            background-color: var(--bg-sidebar);
+            border-left: 1px solid var(--border);
         }
 
         .panel-header {
@@ -129,10 +132,30 @@
 
         pre {
             background-color: #1e1e1e;
-            /* Match editor */
             color: #ce9178;
-            /* Output color */
             overflow: auto;
+        }
+
+        .var-list {
+            padding: 10px;
+            list-style: none;
+            margin: 0;
+        }
+
+        .var-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #3e3e42;
+            font-size: 0.85rem;
+        }
+
+        .var-name {
+            color: var(--keyword);
+        }
+
+        .var-val {
+            color: var(--success);
         }
 
         /* Status Bar */
@@ -179,6 +202,7 @@
                 <option value="(10 + 20) * 3">Arithmetic (Grouping)</option>
                 <option value="true and (false or true)">Boolean Logic</option>
                 <option value="100 > 50 and 50 < 200">Relational Check</option>
+                <option value="x = 42">Assignment (Variables)</option>
                 <option value="debug">Debug Mode Toggle</option>
             </select>
             <button onclick="runCode()">
@@ -189,7 +213,7 @@
 
     <div class="workspace">
         <!-- Editor -->
-        <div class="panel">
+        <div class="panel" style="flex: 2;">
             <div class="panel-header">main.code</div>
             <textarea id="code" spellcheck="false" placeholder="// Type your expression here...
 // Example: 10 + 20 * 3
@@ -197,10 +221,18 @@
         </div>
 
         <!-- Output -->
-        <div class="panel">
+        <div class="panel" style="flex: 2;">
             <div class="panel-header">Console Output</div>
             <pre id="output">System Ready.
 Waiting for input...</pre>
+        </div>
+
+        <!-- Variable Watcher -->
+        <div class="panel panel-sidebar">
+            <div class="panel-header">Symbol Table</div>
+            <ul class="var-list" id="var-list">
+                <li class="var-item"><span style="color:#666; font-style:italic;">No variables</span></li>
+            </ul>
         </div>
     </div>
 
@@ -210,7 +242,7 @@ Waiting for input...</pre>
     </footer>
 
     <div class="loading-overlay" id="loader">
-        COMPILING...
+        EXECUTING...
     </div>
 
     <script>
@@ -233,7 +265,10 @@ Waiting for input...</pre>
             const language = document.getElementById('language').value;
 
             loader.style.display = 'flex';
-            output.innerText = ''; // Clear output
+            output.innerText = '';
+
+            // Heuristic Variable Parser (Visual Only)
+            parseVariables(code);
 
             try {
                 const response = await fetch('/run', {
@@ -245,12 +280,36 @@ Waiting for input...</pre>
                 const data = await response.json();
                 let result = data.output || "No output.";
 
-                // Hacky formatting to make it look more 'terminal'
                 output.innerText = `> Executing ${language}...\n\n${result}`;
             } catch (error) {
                 output.innerText = `[SYSTEM ERROR]: ${error.message}`;
             } finally {
                 loader.style.display = 'none';
+            }
+        }
+
+        function parseVariables(code) {
+            const list = document.getElementById('var-list');
+            list.innerHTML = '';
+
+            // Regex to find x = 10 or let x = 10
+            const regex = /(?:let\s+)?([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;\n]+)/g;
+            let match;
+            let found = false;
+
+            while ((match = regex.exec(code)) !== null) {
+                found = true;
+                const name = match[1];
+                const val = match[2];
+
+                const li = document.createElement('li');
+                li.className = 'var-item';
+                li.innerHTML = `<span class="var-name">${name}</span> <span class="var-val">${val}</span>`;
+                list.appendChild(li);
+            }
+
+            if (!found) {
+                list.innerHTML = '<li class="var-item"><span style="color:#666; font-style:italic;">No variables detected</span></li>';
             }
         }
 

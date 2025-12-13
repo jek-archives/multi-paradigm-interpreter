@@ -46,7 +46,7 @@ class IDEServer(http.server.SimpleHTTPRequestHandler):
             # Use the same python executable running this script
             cmd = [sys.executable, 'interpreter_python/ide.py']
         elif language == 'prolog':
-            cmd = ['swipl', '-s', 'interpreter_prolog/interpreter.pl', '-g', 'repl', '-t', 'halt']
+            cmd = ['swipl', '-s', 'interpreter_prolog/interpreter.pl', '-g', 'start', '-t', 'halt']
         elif language == 'haskell':
             cmd = ['./interpreter_haskell/Interpreter']
             
@@ -56,6 +56,9 @@ class IDEServer(http.server.SimpleHTTPRequestHandler):
             if not input_text.endswith('exit'):
                 input_text += '\nexit'
 
+            import time
+            start_time = time.time()
+            
             result = subprocess.run(
                 cmd,
                 input=input_text,
@@ -65,10 +68,15 @@ class IDEServer(http.server.SimpleHTTPRequestHandler):
                 timeout=5
             )
             
+            end_time = time.time()
+            duration = (end_time - start_time) * 1000 # ms
+            
             if result.returncode != 0:
-                return f"Error (Exit Code {result.returncode}):\n{result.stderr}\n{result.stdout}"
+                 # improvement 1: Unified Error Messages
+                error_msg = result.stderr + "\n" + result.stdout
+                return f"[Runtime Error] in {language.capitalize()}:\n{error_msg.strip()}\n"
                 
-            return result.stdout
+            return f"{result.stdout}\n[Execution Time: {duration:.2f} ms]"
             
         except FileNotFoundError:
             return f"Error: Interpreter for {language} not found/built.\nDid you run 'make'?"

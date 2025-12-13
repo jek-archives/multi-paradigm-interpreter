@@ -6,7 +6,10 @@ import Eval
 import System.IO
 
 main :: IO ()
-main = repl False
+main = do
+    putStrLn "Haskell Interpreter REPL."
+    putStrLn "Commands: 'debug' to toggle AST view, 'exit' to quit."
+    repl False
 
 repl :: Bool -> IO ()
 repl debug = do

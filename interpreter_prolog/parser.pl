@@ -7,44 +7,91 @@ parse(Tokens, AST) :-
 
 % Hierarchy: logical_or -> logical_and -> equality -> relational -> additive -> multiplicative -> unary -> primary
 
+% Hierarchy: logical_or -> logical_and -> equality -> relational -> additive -> multiplicative -> unary -> primary
+
 expression(AST) --> logical_or(AST).
 
 % Logical OR
 logical_or(AST) --> logical_and(Left), logical_or_rest(Left, AST).
-logical_or_rest(Left, binOp(or, Left, Right)) --> [or], logical_and(Right), logical_or_rest(Right, AST). % Incorrect recursion for Left assoc, but simple for now
-logical_or_rest(Node, Node) --> [].
+
+logical_or_rest(Acc, Final) --> 
+    [or], logical_and(Right), 
+    { NewAcc = binOp(or, Acc, Right) },
+    logical_or_rest(NewAcc, Final).
+logical_or_rest(Acc, Acc) --> [].
 
 % Logical AND
 logical_and(AST) --> equality(Left), logical_and_rest(Left, AST).
-logical_and_rest(Left, binOp(and, Left, Right)) --> [and], equality(Right), logical_and_rest(Right, AST).
-logical_and_rest(Node, Node) --> [].
+
+logical_and_rest(Acc, Final) --> 
+    [and], equality(Right), 
+    { NewAcc = binOp(and, Acc, Right) },
+    logical_and_rest(NewAcc, Final).
+logical_and_rest(Acc, Acc) --> [].
 
 % Equality
 equality(AST) --> relational(Left), equality_rest(Left, AST).
-equality_rest(Left, binOp(eq, Left, Right)) --> [eq], relational(Right), equality_rest(Right, AST).
-equality_rest(Left, binOp(neq, Left, Right)) --> [neq], relational(Right), equality_rest(Right, AST).
-equality_rest(Node, Node) --> [].
+
+equality_rest(Acc, Final) --> 
+    [eq], relational(Right), 
+    { NewAcc = binOp(eq, Acc, Right) },
+    equality_rest(NewAcc, Final).
+equality_rest(Acc, Final) --> 
+    [neq], relational(Right), 
+    { NewAcc = binOp(neq, Acc, Right) },
+    equality_rest(NewAcc, Final).
+equality_rest(Acc, Acc) --> [].
 
 % Relational
 relational(AST) --> additive(Left), relational_rest(Left, AST).
-relational_rest(Left, binOp(lt, Left, Right)) --> [lt], additive(Right), relational_rest(Right, AST).
-relational_rest(Left, binOp(gt, Left, Right)) --> [gt], additive(Right), relational_rest(Right, AST).
-relational_rest(Left, binOp(le, Left, Right)) --> [le], additive(Right), relational_rest(Right, AST).
-relational_rest(Left, binOp(ge, Left, Right)) --> [ge], additive(Right), relational_rest(Right, AST).
-relational_rest(Node, Node) --> [].
+
+relational_rest(Acc, Final) --> 
+    [lt], additive(Right), 
+    { NewAcc = binOp(lt, Acc, Right) },
+    relational_rest(NewAcc, Final).
+relational_rest(Acc, Final) --> 
+    [gt], additive(Right), 
+    { NewAcc = binOp(gt, Acc, Right) },
+    relational_rest(NewAcc, Final).
+relational_rest(Acc, Final) --> 
+    [le], additive(Right), 
+    { NewAcc = binOp(le, Acc, Right) },
+    relational_rest(NewAcc, Final).
+relational_rest(Acc, Final) --> 
+    [ge], additive(Right), 
+    { NewAcc = binOp(ge, Acc, Right) },
+    relational_rest(NewAcc, Final).
+relational_rest(Acc, Acc) --> [].
 
 % Additive
 additive(AST) --> multiplicative(Left), additive_rest(Left, AST).
-additive_rest(Left, binOp(plus, Left, Right)) --> [plus], multiplicative(Right), additive_rest(Right, AST). % Note: this is Right Associative in basic DCG. 
-additive_rest(Left, binOp(minus, Left, Right)) --> [minus], multiplicative(Right), additive_rest(Right, AST).
-additive_rest(Node, Node) --> [].
+
+additive_rest(Acc, Final) --> 
+    [plus], multiplicative(Right), 
+    { NewAcc = binOp(plus, Acc, Right) },
+    additive_rest(NewAcc, Final).
+additive_rest(Acc, Final) --> 
+    [minus], multiplicative(Right), 
+    { NewAcc = binOp(minus, Acc, Right) },
+    additive_rest(NewAcc, Final).
+additive_rest(Acc, Acc) --> [].
 
 % Multiplicative
 multiplicative(AST) --> unary(Left), multiplicative_rest(Left, AST).
-multiplicative_rest(Left, binOp(times, Left, Right)) --> [times], unary(Right), multiplicative_rest(Right, AST).
-multiplicative_rest(Left, binOp(div, Left, Right)) --> [div], unary(Right), multiplicative_rest(Right, AST).
-multiplicative_rest(Left, binOp(mod, Left, Right)) --> [mod], unary(Right), multiplicative_rest(Right, AST).
-multiplicative_rest(Node, Node) --> [].
+
+multiplicative_rest(Acc, Final) --> 
+    [times], unary(Right), 
+    { NewAcc = binOp(times, Acc, Right) },
+    multiplicative_rest(NewAcc, Final).
+multiplicative_rest(Acc, Final) --> 
+    [div], unary(Right), 
+    { NewAcc = binOp(div, Acc, Right) },
+    multiplicative_rest(NewAcc, Final).
+multiplicative_rest(Acc, Final) --> 
+    [mod], unary(Right), 
+    { NewAcc = binOp(mod, Acc, Right) },
+    multiplicative_rest(NewAcc, Final).
+multiplicative_rest(Acc, Acc) --> [].
 
 % Unary
 unary(unaryOp(minus, Operand)) --> [minus], unary(Operand).
