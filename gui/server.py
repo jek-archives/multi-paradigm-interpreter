@@ -7,7 +7,11 @@ import sys
 
 PORT = 8080
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(ROOT_DIR)
+# Logic: If we are running from project root, use '.', else use parent of gui
+if os.path.exists("Makefile"):
+    PROJECT_ROOT = "."
+else:
+    PROJECT_ROOT = os.path.dirname(ROOT_DIR)
 
 class IDEServer(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
