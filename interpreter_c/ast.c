@@ -1,6 +1,7 @@
 #include "ast.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 ASTNode *create_node(NodeType type) {
   ASTNode *node = (ASTNode *)malloc(sizeof(ASTNode));
@@ -36,6 +37,19 @@ ASTNode *create_unary_node(int isNot, ASTNode *operand) {
   ASTNode *node = create_node(NODE_UNARY_OP);
   node->data.unary.isNot = isNot;
   node->data.unary.operand = operand;
+  return node;
+}
+
+ASTNode *create_identifier_node(char *name) {
+  ASTNode *node = create_node(NODE_IDENTIFIER);
+  node->data.identifierName = strdup(name);
+  return node;
+}
+
+ASTNode *create_assignment_node(char *name, ASTNode *expression) {
+  ASTNode *node = create_node(NODE_ASSIGNMENT);
+  node->data.assignment.name = strdup(name);
+  node->data.assignment.expression = expression;
   return node;
 }
 

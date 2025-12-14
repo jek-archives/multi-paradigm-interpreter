@@ -6,13 +6,20 @@ import Lexer
 parse :: [Token] -> Expr
 parse tokens = fst (parseExpression tokens)
 
--- Expression (Logical OR)
+-- Expression (Assignment or Logical OR)
 parseExpression :: [Token] -> (Expr, [Token])
-parseExpression tokens = 
+parseExpression (TokIdent name : TokAssign : rest) = 
+    let (expr, rest') = parseExpression rest
+    in (Assign name expr, rest')
+parseExpression tokens = parseLogicalOr tokens
+
+-- Logical OR
+parseLogicalOr :: [Token] -> (Expr, [Token])
+parseLogicalOr tokens = 
     let (left, rest) = parseLogicalAnd tokens
     in case rest of
         (TokOr:rest') -> 
-            let (right, rest'') = parseExpression rest'
+            let (right, rest'') = parseLogicalOr rest'
             in (Binary Or left right, rest'')
         _ -> (left, rest)
 
@@ -102,6 +109,7 @@ parsePrimary :: [Token] -> (Expr, [Token])
 parsePrimary (TokNum n : rest) = (Number n, rest)
 parsePrimary (TokTrue : rest) = (Boolean True, rest)
 parsePrimary (TokFalse : rest) = (Boolean False, rest)
+parsePrimary (TokIdent name : rest) = (Identifier name, rest)
 parsePrimary (TokLParen : rest) = 
     let (expr, (TokRParen:rest')) = parseExpression rest
     in (expr, rest')

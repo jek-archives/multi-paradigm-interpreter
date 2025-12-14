@@ -52,6 +52,8 @@ ASTNode *create_number_node(double value);
 ASTNode *create_boolean_node(int value);
 ASTNode *create_binary_node(OpType op, ASTNode *left, ASTNode *right);
 ASTNode *create_unary_node(int isNot, ASTNode *operand);
+ASTNode *create_identifier_node(char *name);
+ASTNode *create_assignment_node(char *name, ASTNode *expression);
 void free_ast(ASTNode *node);
 
 #endif

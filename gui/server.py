@@ -51,10 +51,8 @@ class IDEServer(http.server.SimpleHTTPRequestHandler):
             cmd = ['./interpreter_haskell/Interpreter']
             
         try:
-            # We need to simulate the "exit" command for REPLs that expect it
+            # We rely on EOF (pipe close) to terminate the interpreter
             input_text = code
-            if not input_text.endswith('exit'):
-                input_text += '\nexit'
 
             import time
             start_time = time.time()

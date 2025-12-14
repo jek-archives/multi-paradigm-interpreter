@@ -5,7 +5,10 @@
 #include <string.h>
 
 // Forward declaration
-double evaluate(ASTNode *node);
+// Forward declaration
+typedef struct Environment Environment;
+Environment *create_environment();
+double evaluate(ASTNode *node, Environment *env);
 
 // Debug helper to print AST type (simplified)
 void print_ast_debug(ASTNode *node, int level) {
@@ -38,6 +41,7 @@ void print_ast_debug(ASTNode *node, int level) {
 int main() {
   char buffer[256];
   int debug_mode = 0;
+  Environment *env = create_environment();
 
   printf("C Interpreter REPL\n");
   printf("Commands: 'debug' to toggle AST view, 'exit' to quit.\n");
@@ -53,8 +57,10 @@ int main() {
     if (strlen(buffer) == 0)
       continue;
 
-    if (strcmp(buffer, "exit") == 0)
+    if (strcmp(buffer, "exit") == 0) {
+      printf("Exited.\n");
       break;
+    }
 
     if (strcmp(buffer, "debug") == 0) {
       debug_mode = !debug_mode;
@@ -73,7 +79,7 @@ int main() {
         printf("-----------------\n");
       }
 
-      double result = evaluate(ast);
+      double result = evaluate(ast, env);
       printf("Result: %f\n", result);
 
       free_ast(ast);

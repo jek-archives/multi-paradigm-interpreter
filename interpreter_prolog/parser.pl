@@ -9,6 +9,7 @@ parse(Tokens, AST) :-
 
 % Hierarchy: logical_or -> logical_and -> equality -> relational -> additive -> multiplicative -> unary -> primary
 
+expression(assign(Name, Expr)) --> [ident(Name)], [assign], expression(Expr).
 expression(AST) --> logical_or(AST).
 
 % Logical OR
@@ -103,3 +104,4 @@ primary(num(N)) --> [num(N)].
 primary(bool(true)) --> [bool(true)].
 primary(bool(false)) --> [bool(false)].
 primary(Expr) --> [lparen], expression(Expr), [rparen].
+primary(var(Name)) --> [ident(Name)].

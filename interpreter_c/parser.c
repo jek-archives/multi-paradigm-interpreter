@@ -5,7 +5,8 @@
 void eat(Parser *parser, TokenType type) {
   if (parser->current_token.type == type) {
     free_token(parser->current_token);
-    parser->current_token = next_token(&parser->lexer);
+    parser->current_token = parser->peek_token;
+    parser->peek_token = next_token(&parser->lexer);
   } else {
     printf("Syntax Error: Expected %d, got %d\n", type,
            parser->current_token.type);
@@ -16,6 +17,7 @@ void eat(Parser *parser, TokenType type) {
 void init_parser(Parser *parser, const char *source) {
   init_lexer(&parser->lexer, source);
   parser->current_token = next_token(&parser->lexer);
+  parser->peek_token = next_token(&parser->lexer);
 }
 
 // Forward declaration
@@ -37,6 +39,12 @@ ASTNode *parse_primary(Parser *parser) {
     eat(parser, TOKEN_LPAREN);
     ASTNode *node = parse_expression(parser);
     eat(parser, TOKEN_RPAREN);
+    return node;
+  } else if (token.type == TOKEN_IDENTIFIER) {
+    char *name = strdup(token.text); 
+    eat(parser, TOKEN_IDENTIFIER);
+    ASTNode *node = create_identifier_node(name);
+    free(name); 
     return node;
   }
 
@@ -155,4 +163,18 @@ ASTNode *parse_logical_or(Parser *parser) {
   return node;
 }
 
-ASTNode *parse_expression(Parser *parser) { return parse_logical_or(parser); }
+ASTNode *parse_expression(Parser *parser) { 
+  if (parser->current_token.type == TOKEN_IDENTIFIER && 
+      parser->peek_token.type == TOKEN_ASSIGN) {
+    
+    char *name = strdup(parser->current_token.text);
+    eat(parser, TOKEN_IDENTIFIER);
+    eat(parser, TOKEN_ASSIGN);
+    
+    ASTNode *expr = parse_expression(parser); // Recursive for chained assignment or just expr
+    ASTNode *node = create_assignment_node(name, expr);
+    free(name);
+    return node;
+  }
+  return parse_logical_or(parser); 
+}

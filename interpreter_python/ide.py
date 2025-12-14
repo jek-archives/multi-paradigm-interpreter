@@ -17,13 +17,15 @@ def main():
     while True:
         try:
             text = input('>>> ')
-        except EOFError:
+        except (EOFError, KeyboardInterrupt):
+            # break to exit loop and fall through to goodbye
             break
             
         if not text:
             continue
             
         if text == 'exit':
+            print("Exited.")
             break
             
         if text == 'debug':
@@ -72,6 +74,7 @@ def main():
                     print(f"  {' ' * (caret_col - 1)}^")
         except Exception as e:
             print(f"Unexpected Error: {e}")
+
 
 if __name__ == '__main__':
     main()

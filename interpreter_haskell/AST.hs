@@ -16,4 +16,5 @@ data Expr
     | Binary Op Expr Expr
     | Unary UnaryOp Expr
     | Identifier String
+    | Assign String Expr
     deriving (Show, Eq)
