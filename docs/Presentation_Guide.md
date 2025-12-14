@@ -1,67 +1,101 @@
-# Project Presentation & Recording Guide
+# Multi-Paradigm Interpreter: Video Presentation Master Guide
 
-**Goal**: Deliver a professional, research-oriented presentation of the Multi-Paradigm Expression Interpreter.
-**Audience**: Professors and Technical Reviewers.
-
----
-
-## 1. Preparation Checklist
-Before you hit record:
-*   [ ] **Clean Screen**: Close unrelated tabs/apps. Set wallpaper to something neutral.
-*   [ ] **Font Size**: Increase terminal and IDE font size (Cmd/Ctrl + '+'). It must be readable on a small screen.
-*   [ ] **Reset State**: Run `clear` in your terminal so it looks fresh.
-*   [ ] **Open Files**: Have `main.c`, `interpreter.py`, `interpreter.pl`, and `Eval.hs` open in tabs.
-*   [ ] **Formatting Check**: Ensure your `Final_Report.md` has 1-inch margins and professional fonts (Arial/Times New Roman) before submitting.
-*   [ ] **Launch GUI**: Have `http://localhost:8080` open and ready.
+**Target Duration**: 15 - 30 Minutes (Max Limit is 45, but concise is better).
+**Goal**: Demonstrate the project, explain the code, and analyze the paradigms.
+**Requirement**: **ALL MEMBERS** must present their assigned part.
+**Leader Role**: Uploads the final submission (Video + Source Code).
 
 ---
 
-## 2. Recommended Recording Flow (Script)
-
-### Part I: Introduction (30-60 Seconds)
-*   **Visual**: Show the Web GUI landing page or a Title Slide.
-*   **Script**:
-    > "Good day. We are [Team Name], and this is our presentation for the Multi-Paradigm Expression Interpreter. The objective of this machine problem was to design a unified system capable of evaluating mathematical and logical expressions across four distinct programming paradigms: Imperative (C), Object-Oriented (Python), Logic (Prolog), and Functional (Haskell)."
-
-### Part II: The Architecture (1 Minute)
-*   **Visual**: Show `docs/System_Architecture.md` or a diagram if you have one.
-*   **Talking Points**:
-    *   "We implemented a standard compiler pipeline: Lexer to Token Stream, Parser to Abstract Syntax Tree (AST), and finally Evaluation."
-    *   "We implemented a standard compiler pipeline: Lexer to Token Stream, Parser to Abstract Syntax Tree (AST), and finally Evaluation."
-    *   "Crucially, we enforced a **Unified Grammar** across all four languages, ensuring that the input `1 + 2 * 3` produces the exact same result in C as it does in Haskell. This demonstrates the **Code Professionalism** required by the specifications."
-
-### Part III: Live Demonstration (2-3 Minutes)
-*   **Action**: Switch to the **Web GUI**.
-*   **Demo 1 (Arithmetic)**:
-    *   Select **C**. Type `10 + 20 * 3`.
-    *   *Say*: "First, demonstrating operator precedence in the Imperative C engine. Multiplication binds tighter than addition."
-*   **Demo 2 (Boolean/Logic)**:
-    *   Select **Python**. Type `true and (false or true)`.
-    *   *Say*: "Next, the Python object-oriented implementation handling boolean logic with grouping."
-*   **Demo 3 (Debug Feature)**:
-    *   **Action**: Type `debug` then `5 * 5`.
-    *   *Say*: "We implemented an advanced IDE feature: Debug Mode. This allows us to inspect the raw Abstract Syntax Tree to verify parsing correctness."
-
-### Part IV: Code walkthrough (Comparative Analysis) (2 Minutes)
-*   *This is the "Research" part. Compare how the code looks different.*
-*   **Visual**: Split screen or switch between `interpreter_c/parser.c` and `interpreter_haskell/Parser.hs`.
-*   **Script**:
-    > "The difference in paradigms is striking. In C (Imperative), we manually manage memory, defining structs for nodes and handling pointers. This gives us performance but requires over 400 lines of code."
-    > "In contrast, looking at the Haskell (Functional) implementation, the exact same logic is expressed in declarative pattern matching. The entire evaluator is less than 50 lines. This confirms our research: Functional languages are significantly better suited for symbolic processing tasks. Each program clearly demonstrates the **characteristics of its paradigm**."
-
-### Part V: Conclusion
-*   **Visual**: Return to the GUI or Title.
-*   **Script**:
-    > "In conclusion, this project successfully integrates four disparate languages into a single cohesive interface. We met all requirements of the machine problem, demonstrating not just coding proficiency, but a deep understanding of the underlying paradigms. Thank you."
+## 1. Preparation Checklist (Do this BEFORE recording)
+*   [ ] **Assign Roles**: Decide who acts as "Member 1", "Member 2", etc.
+*   [ ] **Environment**: Close unrelated apps. Set text editors to a readable font size (Zoom IN).
+*   [ ] **Tools Ready**:
+    *   Open `http://localhost:8080` (Web Interface).
+    *   Open VS Code with `main.c`, `interpreter.py`, `interpreter.pl`, `Main.hs`.
+*   [ ] **Clean State**: Clear your terminal.
+*   [ ] **Audio**: Use a good microphone. Speak slowly and clearly.
 
 ---
 
-## 3. Pro Tips for a "Human-Like" Feel
-1.  **Don't Read Verbatim**: Use the points above as an outline, but speak naturally.
-2.  **Handle Errors Gracefully**: If you make a typo during the demo, just correct it and say "Let me correct that syntax." It shows you are doing it live, which is good proof of work.
-3.  **Mouse Movement**: Move your mouse deliberately. Don't shake it around. Point to the code you are talking about.
-4.  **Audio**: Use a headset mic if possible. Background noise kills professionalism.
+## 2. Submission & Packaging Guide (Leader Only)
+**After the video is done:**
+1.  **Package Source Code**:
+    *   Create a folder `MultiParadigm_Project`.
+    *   Include: `interpreter_c/`, `interpreter_python/`, `interpreter_prolog/`, `interpreter_haskell/`, `gui/` folders.
+    *   Include: `Final_Report.pdf` (Export your MD to PDF).
+    *   **Do NOT** include: `__pycache__`, `.o` files, `.exe` files (Source code only!).
+    *   Zip it: `MultiParadigm_Project.zip`.
+2.  **Upload to GDrive**:
+    *   Upload the **Video File** (.mp4).
+    *   Upload the **Zip File**.
+    *   Upload the **Document**.
+    *   **Set Permissions**: "Anyone with the link can view".
+3.  **Submit**: Paste the GDrive Link to USTeP.
 
-## 4. Troubleshooting During Recording
-*   If the C interpreter crashes? -> "As we can see, C requires strict memory safety." (Restart it and move on).
-*   If Python feels slow? -> "This demonstrates the trade-off between Python's developer speed versus C's execution speed."
+---
+
+## 3. The Script & Flow
+
+### Part I: Introduction & Objective
+**Speaker**: [Member 1 / Leader]
+**Visual**: Show the Web Interface (Landing Screen).
+
+> "Good day. We are [Team Name], and this is our presentation for the Multi-Paradigm Expression Interpreter.
+>
+> **Project Objective**: Our goal was to design a unified system capable of evaluating arithmetic, relational, and boolean expressions, along with variable assignments. We achieved this by implementing the exact same interpreter logic using four distinct programming paradigms: Imperative (C), Object-Oriented (Python), Logic (Prolog), and Functional (Haskell).
+>
+> **Core Goal**: The purpose is not just to build a calculator, but to compare how different paradigms approach the same problem. We enforced a **Unified Grammar**, ensuring that `10 + 20` works identically in all four languages."
+
+### Part II: Live Demonstration (The "Running Program")
+**Speaker**: [Member 2]
+**Visual**: Web Interface (`http://localhost:8080`).
+
+*   **Step 1 (Arithmetic in C)**:
+    *   *Action*: Select **C**, type `10 + 20 * 3`. Click Run.
+    *   *Script*: "First, I will demonstrate the Imperative C engine. Observe how it correctly applies order of operations (PEMDAS), multiplying 20 by 3 before adding 10. Result: 70."
+*   **Step 2 (Boolean in Python)**:
+    *   *Action*: Select **Python**, type `true and (false or true)`. Click Run.
+    *   *Script*: "Next, the Python engine handling boolean logic with grouping. It evaluates the parentheses first."
+*   **Step 3 (Variables - The Hard Part)**:
+    *   *Action*: Select **Haskell** (or C), type `x = 50 + 50`, Run. Then `x + 10`, Run.
+    *   *Script*: "Here we demonstrate persistent state. We assign `x` the value 100. Then we use `x` in a new calculation. This proves our Symbol Table implementation works across requests."
+*   **Step 4 (The "Exit" Command)**:
+    *   *Action*: Type `exit`.
+    *   *Script*: "Finally, we implemented a standardized `exit` command. As you can see, the system responds with 'Exited.', properly terminating the backend process."
+
+### Part III: Source Code & Paradigm Analysis (The "Meat")
+*Each member explains one language.*
+
+**Language 1: C (Imperative)**
+**Speaker**: [Member 3]
+**Visual**: `interpreter_c/main.c` & `interpreter.c`.
+> "I worked on the C implementation. The challenge here was **Memory Management**. Unlike high-level languages, we had to manually define `structs` for our AST nodes and implement a garbage collection function to free memory after every run. This represents the Imperative paradigm: giving us full control over the hardware at the cost of complexity."
+
+**Language 2: Python (Object-Oriented)**
+**Speaker**: [Member 4 (or Member 1 again)]
+**Visual**: `interpreter_python/interpreter.py`.
+> "For Pythons, we used the **Visitor Pattern**. We defined classes like `BinOp` and `Number`. The Interpreter class 'visits' these objects. This is the essence of OOP: encapsulating data and behavior into objects. It was the easiest to implement but runs slower than C."
+
+**Language 3: Prolog (Logic)**
+**Speaker**: [Member 2 (or 3)]
+**Visual**: `interpreter_prolog/interpreter.pl`.
+> "Prolog was the most unique. Instead of functions, we used **Predicates** and **Unification**. Notice how we don't 'return' values; we define relationships like `eval(add(A,B), R)`. We also had to 'thread' the state manually because variables in Prolog are immutable."
+
+**Language 4: Haskell (Functional)**
+**Speaker**: [Member X]
+**Visual**: `interpreter_haskell/Eval.hs`.
+> "Finally, Haskell. We used **Pattern Matching**. The entire evaluator is incredibly concise because we just match the AST shape. This proves that Functional Programming is superior for symbolic tasks like parsing, as it avoids side effects entirely."
+
+### Part IV: Conclusion
+**Speaker**: [Leader]
+**Visual**: Web Interface or Title Slide.
+
+> "In conclusion, we successfully integrated four disparate paradigms into a single user experience. We met all the requirements: the unified grammar, the REPL, and the paradigm comparison. This project demonstrates our understanding of how different coding philosophies solve the same machine problem. Thank you."
+
+---
+
+## 4. Tips for Success
+*   **Don't Rush**: You have 45 minutes, but you don't need to fill it all. 15-20 minutes of high-quality explanation is better than 45 minutes of silence.
+*   **Show, Don't Just Tell**: Whenever you talk about a feature (like "Variables"), point to the code or show it run.
+*   **Transitions**: Say "Now, I will pass it to [Name] to explain C."
