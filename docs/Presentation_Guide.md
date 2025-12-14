@@ -10,7 +10,8 @@ Before you hit record:
 *   [ ] **Clean Screen**: Close unrelated tabs/apps. Set wallpaper to something neutral.
 *   [ ] **Font Size**: Increase terminal and IDE font size (Cmd/Ctrl + '+'). It must be readable on a small screen.
 *   [ ] **Reset State**: Run `clear` in your terminal so it looks fresh.
-*   [ ] **Open Files**: Have `main.c`, `interpreter.py`, `interpreter.pl`, and `Eval.hs` open in tabs to quickly switch between them.
+*   [ ] **Open Files**: Have `main.c`, `interpreter.py`, `interpreter.pl`, and `Eval.hs` open in tabs.
+*   [ ] **Formatting Check**: Ensure your `Final_Report.md` has 1-inch margins and professional fonts (Arial/Times New Roman) before submitting.
 *   [ ] **Launch GUI**: Have `http://localhost:8080` open and ready.
 
 ---
@@ -26,7 +27,8 @@ Before you hit record:
 *   **Visual**: Show `docs/System_Architecture.md` or a diagram if you have one.
 *   **Talking Points**:
     *   "We implemented a standard compiler pipeline: Lexer to Token Stream, Parser to Abstract Syntax Tree (AST), and finally Evaluation."
-    *   "Crucially, we enforced a **Unified Grammar** across all four languages, ensuring that the input `1 + 2 * 3` produces the exact same result in C as it does in Haskell."
+    *   "We implemented a standard compiler pipeline: Lexer to Token Stream, Parser to Abstract Syntax Tree (AST), and finally Evaluation."
+    *   "Crucially, we enforced a **Unified Grammar** across all four languages, ensuring that the input `1 + 2 * 3` produces the exact same result in C as it does in Haskell. This demonstrates the **Code Professionalism** required by the specifications."
 
 ### Part III: Live Demonstration (2-3 Minutes)
 *   **Action**: Switch to the **Web GUI**.
@@ -45,7 +47,7 @@ Before you hit record:
 *   **Visual**: Split screen or switch between `interpreter_c/parser.c` and `interpreter_haskell/Parser.hs`.
 *   **Script**:
     > "The difference in paradigms is striking. In C (Imperative), we manually manage memory, defining structs for nodes and handling pointers. This gives us performance but requires over 400 lines of code."
-    > "In contrast, looking at the Haskell (Functional) implementation, the exact same logic is expressed in declarative pattern matching. The entire evaluator is less than 50 lines. This confirms our research: Functional languages are significantly better suited for symbolic processing tasks."
+    > "In contrast, looking at the Haskell (Functional) implementation, the exact same logic is expressed in declarative pattern matching. The entire evaluator is less than 50 lines. This confirms our research: Functional languages are significantly better suited for symbolic processing tasks. Each program clearly demonstrates the **characteristics of its paradigm**."
 
 ### Part V: Conclusion
 *   **Visual**: Return to the GUI or Title.

@@ -1,5 +1,6 @@
 from enum import Enum, auto
 from typing import Any, Optional
+from errors import LexerError
 
 class TokenType(Enum):
     NUMBER = auto()
@@ -32,21 +33,31 @@ class TokenType(Enum):
     EOF = auto()
 
 class Token:
-    def __init__(self, type_: TokenType, value: Any = None):
+    def __init__(self, type_: TokenType, value: Any = None, lineno: int = None, column: int = None):
         self.type = type_
         self.value = value
+        self.lineno = lineno
+        self.column = column
     
     def __repr__(self):
-        return f"Token({self.type.name}, {self.value})"
+        return f"Token({self.type.name}, {self.value}, Line:{self.lineno}, Col:{self.column})"
 
 class Lexer:
     def __init__(self, text: str):
         self.text = text
         self.pos = 0
+        self.lineno = 1
+        self.column = 1
         self.current_char = self.text[self.pos] if self.text else None
 
     def advance(self):
+        if self.current_char == '\n':
+            self.lineno += 1
+            self.column = 0
+        
         self.pos += 1
+        self.column += 1
+        
         if self.pos < len(self.text):
             self.current_char = self.text[self.pos]
         else:
@@ -63,25 +74,29 @@ class Lexer:
             self.advance()
 
     def number(self):
+        lineno = self.lineno
+        column = self.column
         result = ''
         while self.current_char is not None and (self.current_char.isdigit() or self.current_char == '.'):
             result += self.current_char
             self.advance()
-        return Token(TokenType.NUMBER, float(result))
+        return Token(TokenType.NUMBER, float(result), lineno, column)
 
     def _id(self):
+        lineno = self.lineno
+        column = self.column
         result = ''
         while self.current_char is not None and (self.current_char.isalnum() or self.current_char == '_'):
             result += self.current_char
             self.advance()
             
-        if result == 'and': return Token(TokenType.AND, 'and')
-        if result == 'or': return Token(TokenType.OR, 'or')
-        if result == 'not': return Token(TokenType.NOT, 'not')
-        if result == 'true': return Token(TokenType.TRUE, True)
-        if result == 'false': return Token(TokenType.FALSE, False)
+        if result == 'and': return Token(TokenType.AND, 'and', lineno, column)
+        if result == 'or': return Token(TokenType.OR, 'or', lineno, column)
+        if result == 'not': return Token(TokenType.NOT, 'not', lineno, column)
+        if result == 'true': return Token(TokenType.TRUE, True, lineno, column)
+        if result == 'false': return Token(TokenType.FALSE, False, lineno, column)
         
-        return Token(TokenType.IDENTIFIER, result)
+        return Token(TokenType.IDENTIFIER, result, lineno, column)
 
     def get_next_token(self) -> Token:
         while self.current_char is not None:
@@ -96,64 +111,78 @@ class Lexer:
                 return self._id()
             
             if self.current_char == '+':
+                token = Token(TokenType.PLUS, '+', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.PLUS, '+')
+                return token
             
             if self.current_char == '-':
+                token = Token(TokenType.MINUS, '-', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.MINUS, '-')
+                return token
             
             if self.current_char == '*':
+                token = Token(TokenType.MUL, '*', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.MUL, '*')
+                return token
             
             if self.current_char == '/':
+                token = Token(TokenType.DIV, '/', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.DIV, '/')
+                return token
             
             if self.current_char == '%':
+                token = Token(TokenType.MOD, '%', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.MOD, '%')
+                return token
             
             if self.current_char == '(':
+                token = Token(TokenType.LPAREN, '(', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.LPAREN, '(')
+                return token
             
             if self.current_char == ')':
+                token = Token(TokenType.RPAREN, ')', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.RPAREN, ')')
+                return token
             
             if self.current_char == '=':
+                start_col = self.column
                 if self.peek() == '=':
                     self.advance()
                     self.advance()
-                    return Token(TokenType.EQ, '==')
+                    return Token(TokenType.EQ, '==', self.lineno, start_col)
+                token = Token(TokenType.ASSIGN, '=', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.ASSIGN, '=')
+                return token
             
             if self.current_char == '!':
+                start_col = self.column
                 if self.peek() == '=':
                     self.advance()
                     self.advance()
-                    return Token(TokenType.NE, '!=')
-                raise Exception("Expected !=, got !")
+                    return Token(TokenType.NE, '!=', self.lineno, start_col)
+                raise LexerError("Expected !=, got !", self.lineno, self.column)
             
             if self.current_char == '<':
+                start_col = self.column
                 if self.peek() == '=':
                     self.advance()
                     self.advance()
-                    return Token(TokenType.LE, '<=')
+                    return Token(TokenType.LE, '<=', self.lineno, start_col)
+                token = Token(TokenType.LT, '<', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.LT, '<')
+                return token
             
             if self.current_char == '>':
+                start_col = self.column
                 if self.peek() == '=':
                     self.advance()
                     self.advance()
-                    return Token(TokenType.GE, '>=')
+                    return Token(TokenType.GE, '>=', self.lineno, start_col)
+                token = Token(TokenType.GT, '>', self.lineno, self.column)
                 self.advance()
-                return Token(TokenType.GT, '>')
+                return token
             
-            raise Exception(f"Invalid character: {self.current_char}")
+            raise LexerError(f"Invalid character: {self.current_char}", self.lineno, self.column)
 
-        return Token(TokenType.EOF, None)
+        return Token(TokenType.EOF, None, self.lineno, self.column)

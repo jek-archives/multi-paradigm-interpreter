@@ -1,4 +1,5 @@
 from ast_nodes import Number, Boolean, BinOp, UnaryOp, Variable, VarAssign
+from errors import InterpreterError
 
 class Interpreter:
     def __init__(self):
@@ -12,7 +13,7 @@ class Interpreter:
         return visitor(node)
 
     def generic_visit(self, node):
-        raise Exception(f'No visit_{type(node).__name__} method')
+        raise InterpreterError(f'No visit_{type(node).__name__} method')
 
     def visit_Number(self, node):
         return node.value
@@ -24,7 +25,7 @@ class Interpreter:
         var_name = node.name
         if var_name in self.variables:
             return self.variables[var_name]
-        raise Exception(f"Undefined variable '{var_name}'")
+        raise InterpreterError(f"Undefined variable '{var_name}'")
 
     def visit_VarAssign(self, node):
         val = self.visit(node.value)
@@ -39,7 +40,7 @@ class Interpreter:
             return -val
         elif node.op == 'not' or node.op == 'NOT':
             return not val
-        raise Exception(f"Unknown unary operator: {node.op}")
+        raise InterpreterError(f"Unknown unary operator: {node.op}")
 
     def visit_BinOp(self, node):
         left = self.visit(node.left)
@@ -66,4 +67,4 @@ class Interpreter:
         if op == 'and': return left and right
         if op == 'or': return left or right
         
-        raise Exception(f"Unknown binary operator: {op}")
+        raise InterpreterError(f"Unknown binary operator: {op}")

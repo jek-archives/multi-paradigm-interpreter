@@ -1,16 +1,23 @@
 from lexer import Lexer, TokenType
 from ast_nodes import Number, Boolean, BinOp, UnaryOp, Variable, VarAssign
+from errors import ParserError
 
 class Parser:
     def __init__(self, lexer: Lexer):
         self.lexer = lexer
         self.current_token = self.lexer.get_next_token()
+        self.peek_token = self.lexer.get_next_token()
 
     def eat(self, token_type):
         if self.current_token.type == token_type:
-            self.current_token = self.lexer.get_next_token()
+            self.current_token = self.peek_token
+            self.peek_token = self.lexer.get_next_token()
         else:
-            raise Exception(f"Invalid syntax: Expected {token_type}, got {self.current_token.type}")
+            raise ParserError(
+                f"Invalid syntax: Expected {token_type}, got {self.current_token.type}",
+                self.current_token.lineno,
+                self.current_token.column
+            )
 
     def primary(self):
         token = self.current_token
@@ -43,7 +50,7 @@ class Parser:
             self.eat(TokenType.IDENTIFIER)
             return Variable(token.value)
             
-        raise Exception(f"Syntax Error: Unexpected token {token}")
+        raise ParserError(f"Syntax Error: Unexpected token {token}", token.lineno, token.column)
 
     def unary(self):
         token = self.current_token
@@ -105,20 +112,13 @@ class Parser:
         return self.logical_or() 
 
     def parse(self):
-        # Entry point for program (supports assignment or expression)
-        if self.current_token.type == TokenType.IDENTIFIER:
-            # Look ahead to see if it's assignment
-            # This is a hacky LL(2) check or we can do it via a peek in lexer
-            # Ideally:
-            # statement = assignment | expression
-            # assignment = identifier "=" expression
-            
-            # Simple workaround: Check if next token is ASSIGN
-            # But Lexer consumes. We need peek. Lexer has peek.
-            next_char_check = self.lexer.peek() 
-            # Wait, Parser consumes tokens. We need to peek TOKEN not CHAR.
-            # Our parser architecture doesn't have token peek easily without consuming.
-            # Let's assume expressions for now, or simple assignment check if implemented later.
-            pass
+        # Lookahead to distinguish assignment "x = ..." from expression "x + ..."
+        if self.current_token.type == TokenType.IDENTIFIER and self.peek_token.type == TokenType.ASSIGN:
+            var_name = self.current_token.value
+            self.eat(TokenType.IDENTIFIER)
+            self.eat(TokenType.ASSIGN)
+            # Use expr() to parse the right-hand side value
+            value = self.expr()
+            return VarAssign(var_name, value)
             
         return self.expr()
